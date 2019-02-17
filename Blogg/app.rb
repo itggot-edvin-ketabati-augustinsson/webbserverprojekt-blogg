@@ -13,18 +13,20 @@ post('/login') do
     db = SQLite3::Database.new('blogg.db')
     db.results_as_hash = true
     result = db.execute("SELECT Password FROM users WHERE Username =(?)", params["name"]) 
-    not_password = result[0]["Password"]
-    if BCrypt::Password.new(not_password) == params["pass"]
+    encrypted_pass = result[0]["Password"]
+    if BCrypt::Password.new(encrypted_pass) == params["pass"]
         session[:loggedin] = true
-        redirect('/welcome')
+        redirect('/profil')
     else
-        redirect('/lolno')
+        redirect('/failed')
     end
 end
 
-get('/welcome') do
+get('/profil') do
     if session[:loggedin] == true
-        slim(:welcome)
+        # Hitta ett sätt att ta med användarnamn / ID till denna sidan och för att visa den + alla inlägg från denna användare. 
+        # Lagra detta + alla inlägg i variabler och dunka in i Slim
+        slim(:profil)
     else
         redirect('/')
     end
@@ -45,4 +47,8 @@ post('/create') do
     db = SQLite3::Database.new('blogg.db')
     db.execute("INSERT INTO users(Username, Password) VALUES('#{name}','#{password}')")
     redirect('/')
+end
+
+get('/failed') do
+    slim(:login_failed)
 end
