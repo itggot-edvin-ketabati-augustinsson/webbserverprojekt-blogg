@@ -1,11 +1,16 @@
-/ h1 Profilsida: #{Användarnamn}
-
+h1 Välkommen till din profilsida #{username}!
 / Ordna alla inlägg från denna användare i artiklar t.ex för att raddas upp.
 
 form action="/post" method="POST"
     input type="text" name="post_text" placeholder="Skriv ditt inlägg här:"
     input type="text" name="post_image" placeholder="Sökväg till bild (valfri)"
-    input type="Submit" value="Publicera"
+    input type="submit" value="Publicera"
 
+div id="posts"
+    - posts.each do |element|
+        article
+            label #{element["ContentText"]}
+            -if element["ContentImage"] != nil
+                img src="#{element["ContentImage"]}" alt="Ser du detta så funkar inte din sökväg till bilden."
 form action="/logout" method="POST"
     input type="submit" value="GTFUOH"

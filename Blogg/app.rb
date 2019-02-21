@@ -12,13 +12,15 @@ end
 post('/login') do
     db = SQLite3::Database.new('blogg.db')
     db.results_as_hash = true
-    result = db.execute("SELECT Password FROM users WHERE Username =(?)", params["name"])
+    result = db.execute("SELECT Password, UserId FROM users WHERE Username =(?)", params["name"])
     if result == []
         redirect('/failed')
     end
     encrypted_pass = result[0]["Password"]
     if BCrypt::Password.new(encrypted_pass) == params["pass"]
         session[:loggedin] = true
+        session[:user_id] = result[0]["UserId"]
+        session[:name] = params["name"]
         redirect('/profil')
     else
         redirect('/failed')
@@ -27,9 +29,13 @@ end
 
 get('/profil') do
     if session[:loggedin] == true
-        # Hitta ett sätt att ta med användarnamn / ID till denna sidan och för att visa den + alla inlägg från denna användare. 
-        # Lagra detta + alla inlägg i variabler och dunka in i Slim
-        slim(:profil)
+        db = SQLite3::Database.new('blogg.db')
+        db.results_as_hash = true
+        posts = db.execute("SELECT ContentText, ContentImage FROM posts WHERE UserId =(?)", session[:user_id])
+        slim(:profil, locals:{
+            username: session[:name],
+            posts: posts
+        })
     else
         redirect('/')
     end
@@ -48,10 +54,27 @@ post('/create') do
     name = params["name"]
     password = BCrypt::Password.create(params["pass"])
     db = SQLite3::Database.new('blogg.db')
-    db.execute("INSERT INTO users(Username, Password) VALUES('#{name}','#{password}')")
+    db.execute("INSERT INTO users(Username, Password) VALUES( (?), (?) )",name, password)
     redirect('/')
 end
 
 get('/failed') do
     slim(:login_failed)
+end
+
+post('/post') do
+    text = params["post_text"]
+    image = params["post_image"]
+    user_id = session[:user_id]
+    db = SQLite3::Database.new('blogg.db')
+    if image != nil
+        db.execute("INSERT INTO posts(UserId, ContentText, ContentImage) VALUES( (?),(?),(?) )",user_id,text,image)
+    else
+        db.execute("INSERT INTO posts(UserId, ContentText) VALUES( (?),(?) )",user_id,text)
+    end
+    redirect('/profil')
+end
+
+error do
+    slim(:error)
 end
