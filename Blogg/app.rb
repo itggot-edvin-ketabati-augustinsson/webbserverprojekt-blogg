@@ -12,7 +12,10 @@ end
 post('/login') do
     db = SQLite3::Database.new('blogg.db')
     db.results_as_hash = true
-    result = db.execute("SELECT Password FROM users WHERE Username =(?)", params["name"]) 
+    result = db.execute("SELECT Password FROM users WHERE Username =(?)", params["name"])
+    if result == []
+        redirect('/failed')
+    end
     encrypted_pass = result[0]["Password"]
     if BCrypt::Password.new(encrypted_pass) == params["pass"]
         session[:loggedin] = true

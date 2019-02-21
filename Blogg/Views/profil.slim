@@ -1,6 +1,11 @@
-h1 Profilsida: #{Användarnamn}
+/ h1 Profilsida: #{Användarnamn}
 
-Ordna alla inlägg från denna användare i artiklar t.ex för att raddas upp.
+/ Ordna alla inlägg från denna användare i artiklar t.ex för att raddas upp.
+
+form action="/post" method="POST"
+    input type="text" name="post_text" placeholder="Skriv ditt inlägg här:"
+    input type="text" name="post_image" placeholder="Sökväg till bild (valfri)"
+    input type="Submit" value="Publicera"
 
 form action="/logout" method="POST"
     input type="submit" value="GTFUOH"
