@@ -75,6 +75,6 @@ post('/post') do
     redirect('/profil')
 end
 
-error do
+error 400..510 do
     slim(:error)
 end
