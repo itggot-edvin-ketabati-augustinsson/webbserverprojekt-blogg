@@ -1,0 +1,20 @@
+link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
+
+h1 Välkommen till redigeringssidan!
+
+div id="post"
+    - post.each do |element|
+        article
+            div class="controls"
+                form action="/delete/#{element["PostId"]}" method="POST"
+                    button type="submit" value=""
+                        i.material-icons delete
+            form action="/post" method="POST"
+                input type="text" name="post_text" Value="Skriv ditt inlägg här:"
+                input type="text" name="post_image" placeholder="Sökväg till bild (valfri)"
+                input type="submit" value="Publicera"
+            label #{element["ContentText"]}
+            -if element["ContentImage"] != nil
+                img src="#{element["ContentImage"]}" alt="Ser du detta så funkar inte din sökväg till bilden."
+form action="/profil" method="GET"
+    input type="submit" value="Tillbaka till profil"

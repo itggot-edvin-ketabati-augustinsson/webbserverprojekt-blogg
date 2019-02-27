@@ -59,6 +59,7 @@ post('/create') do
 end
 
 get('/failed') do
+    session.destroy
     slim(:login_failed)
 end
 
@@ -75,6 +76,21 @@ post('/post') do
     redirect('/profil')
 end
 
+post('/delete/:id') do
+    db = SQLite3::Database.new('blogg.db')
+    db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
+    redirect('/profil')
+end
+
+get('/edit/:id') do
+    db = SQLite3::Database.new('blogg.db')
+    post = db.execute("SELECT PostId, ContentText, ContentImage FROM posts WHERE PostId =(?)", params["id"])
+    slim(:edit, locals:{
+        post: post
+    })
+end
+
 error 400..510 do
+    session.destroy
     slim(:error)
 end

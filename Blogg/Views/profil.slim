@@ -3,7 +3,7 @@ link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesh
 h1 Välkommen till din profilsida #{username}!
 
 form action="/post" method="POST"
-    input type="text" name="post_text" placeholder="Skriv ditt inlägg här:"
+    input type="text" name="post_text" required="required" placeholder="Skriv ditt inlägg här:"
     input type="text" name="post_image" placeholder="Sökväg till bild (valfri)"
     input type="submit" value="Publicera"
 
@@ -11,9 +11,10 @@ div id="posts"
     - posts.each do |element|
         article
             div class="controls"
-                a href="/edit"
-                    i.material-icons edit
-                form action="/delete" method="POST"
+                form action="/edit/#{element["PostId"]}" method="GET"
+                    button type="submit" value=""
+                        i.material-icons edit
+                form action="/delete/#{element["PostId"]}" method="POST"
                     button type="submit" value=""
                         i.material-icons delete
             label #{element["ContentText"]}
