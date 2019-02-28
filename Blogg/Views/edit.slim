@@ -9,7 +9,7 @@ div id="post"
                 form action="/delete/#{element["PostId"]}" method="POST"
                     button type="submit" value=""
                         i.material-icons delete
-            form action="/post" method="POST"
+            form action="/update/#{element["PostId"]}" method="POST"
                 input type="text" name="post_text" value="#{element["ContentText"]}"
                 -if element["ContentImage"] != nil
                     input type="text" name="post_image" value="#{element["ContentImage"]}"

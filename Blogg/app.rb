@@ -78,8 +78,14 @@ end
 
 post('/delete/:id') do
     db = SQLite3::Database.new('blogg.db')
-    db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
-    redirect('/profil')
+
+    op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
+    if op_id == session[:user_id]
+        db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
+        redirect('/profil')
+    else
+        redirect('/')
+    end
 end
 
 get('/edit/:id') do
@@ -92,7 +98,19 @@ get('/edit/:id') do
 end
 
 post('/update/:id') do
+    db = SQLite3::Database.new('blogg.db')
     
+    op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
+    if op_id == session[:user_id]
+        if params["post_image"] != nil
+            db.execute("UPDATE posts SET ContentText =(?), ContentImage =(?) WHERE PostId =(?)",params["post_text"],params["post_image"], params["id"])
+        else
+            db.execute("UPDATE posts SET ContentText =(?) WHERE PostId =(?)",params["post_text"], params["id"])
+        end
+        redirect('/profil')
+    else
+        redirect('/')
+    end
 end
 
 error 400..510 do
