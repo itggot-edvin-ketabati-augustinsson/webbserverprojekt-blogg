@@ -10,11 +10,9 @@ div id="post"
                     button type="submit" value=""
                         i.material-icons delete
             form action="/post" method="POST"
-                input type="text" name="post_text" Value="Skriv ditt inlägg här:"
-                input type="text" name="post_image" placeholder="Sökväg till bild (valfri)"
-                input type="submit" value="Publicera"
-            label #{element["ContentText"]}
-            -if element["ContentImage"] != nil
-                img src="#{element["ContentImage"]}" alt="Ser du detta så funkar inte din sökväg till bilden."
+                input type="text" name="post_text" value="#{element["ContentText"]}"
+                -if element["ContentImage"] != nil
+                    input type="text" name="post_image" value="#{element["ContentImage"]}"
+                input type="submit" value="Uppdatera"
 form action="/profil" method="GET"
     input type="submit" value="Tillbaka till profil"

@@ -84,10 +84,15 @@ end
 
 get('/edit/:id') do
     db = SQLite3::Database.new('blogg.db')
+    db.results_as_hash = true
     post = db.execute("SELECT PostId, ContentText, ContentImage FROM posts WHERE PostId =(?)", params["id"])
     slim(:edit, locals:{
         post: post
     })
+end
+
+post('/update/:id') do
+    
 end
 
 error 400..510 do
