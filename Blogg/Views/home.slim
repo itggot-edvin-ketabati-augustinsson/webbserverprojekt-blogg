@@ -17,13 +17,6 @@ html lang="en"
         div id="posts"
             - posts.each do |element|
                 article
-                    div class="controls"
-                        form action="/edit/#{element["PostId"]}" method="GET"
-                            button type="submit" value=""
-                                i.material-icons edit
-                        form action="/delete/#{element["PostId"]}" method="POST"
-                            button type="submit" value=""
-                                i.material-icons delete
                     label Postman: #{element["Username"]}
                     br
                     label #{element["ContentText"]}
