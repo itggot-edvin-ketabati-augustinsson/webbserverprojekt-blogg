@@ -80,7 +80,7 @@ post('/delete/:id') do
     db = SQLite3::Database.new('blogg.db')
 
     op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
-    if op_id == session[:user_id]
+    if op_id[0][0] == session[:user_id]
         db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
         redirect('/profil')
     else
@@ -101,7 +101,7 @@ post('/update/:id') do
     db = SQLite3::Database.new('blogg.db')
     
     op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
-    if op_id == session[:user_id]
+    if op_id[0][0] == session[:user_id]
         if params["post_image"] != nil
             db.execute("UPDATE posts SET ContentText =(?), ContentImage =(?) WHERE PostId =(?)",params["post_text"],params["post_image"], params["id"])
         else
@@ -109,11 +109,15 @@ post('/update/:id') do
         end
         redirect('/profil')
     else
-        redirect('/')
+        redirect('/failed')
     end
 end
 
 error 400..510 do
-    session.destroy
     slim(:error)
+end
+
+post('/fuckup') do
+    session.destroy
+    redirect('/')
 end
