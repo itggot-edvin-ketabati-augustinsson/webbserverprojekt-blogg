@@ -6,7 +6,12 @@ require 'bcrypt'
 enable :sessions
 
 get('/') do
-    slim(:home)
+    db = SQLite3::Database.new('blogg.db')
+    db.results_as_hash = true
+    posts = db.execute("SELECT posts.PostId, posts.ContentText, posts.ContentImage, users.Username FROM posts INNER JOIN users ON users.UserId = posts.UserId")
+    slim(:home, locals:{
+        posts: posts
+    })
 end
 
 post('/login') do
@@ -84,17 +89,23 @@ post('/delete/:id') do
         db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
         redirect('/profil')
     else
-        redirect('/')
+        redirect('/failed')
     end
 end
 
 get('/edit/:id') do
     db = SQLite3::Database.new('blogg.db')
-    db.results_as_hash = true
-    post = db.execute("SELECT PostId, ContentText, ContentImage FROM posts WHERE PostId =(?)", params["id"])
-    slim(:edit, locals:{
-        post: post
-    })
+
+    op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
+    if op_id[0][0] == session[:user_id]
+        db.results_as_hash = true
+        post = db.execute("SELECT PostId, ContentText, ContentImage FROM posts WHERE PostId =(?)", params["id"])
+        slim(:edit, locals:{
+            post: post
+        })
+    else
+        redirect('/failed')
+    end
 end
 
 post('/update/:id') do

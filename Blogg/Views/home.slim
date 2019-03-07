@@ -4,6 +4,7 @@ html lang="en"
         meta charset="UTF-8"/
         meta name="viewport" content="width=device-width, initial-scale=1.0"/
         meta http-equiv="X-UA-Compatible" content="ie=edge"/
+        link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
         title Blogg?
     body
         h2 Välkommen till blogg?
@@ -12,3 +13,20 @@ html lang="en"
             input type='password' placeholder='pass' name='pass'
             input type='submit' value='Login'
         a href="/register" registrer
+
+        div id="posts"
+            - posts.each do |element|
+                article
+                    div class="controls"
+                        form action="/edit/#{element["PostId"]}" method="GET"
+                            button type="submit" value=""
+                                i.material-icons edit
+                        form action="/delete/#{element["PostId"]}" method="POST"
+                            button type="submit" value=""
+                                i.material-icons delete
+                    label Postman: #{element["Username"]}
+                    br
+                    label #{element["ContentText"]}
+                    br
+                    -if element["ContentImage"] != nil
+                        img src="#{element["ContentImage"]}" alt="Ser du detta så funkar inte din sökväg till bilden."

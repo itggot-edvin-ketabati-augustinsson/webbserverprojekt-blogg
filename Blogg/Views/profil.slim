@@ -18,6 +18,7 @@ div id="posts"
                     button type="submit" value=""
                         i.material-icons delete
             label #{element["ContentText"]}
+            br
             -if element["ContentImage"] != nil
                 img src="#{element["ContentImage"]}" alt="Ser du detta så funkar inte din sökväg till bilden."
 form action="/logout" method="POST"
