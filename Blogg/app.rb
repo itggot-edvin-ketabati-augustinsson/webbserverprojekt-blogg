@@ -5,6 +5,22 @@ require 'bcrypt'
 
 enable :sessions
 
+def login(result)
+    encrypted_pass = result[0]["Password"]
+    if BCrypt::Password.new(encrypted_pass) == params["pass"]
+        session[:loggedin] = true
+        session[:user_id] = result[0]["UserId"]
+        session[:name] = params["name"]
+        return true
+    else
+        return false
+    end
+end
+
+before do
+    
+end
+
 get('/') do
     db = SQLite3::Database.new('blogg.db')
     db.results_as_hash = true
@@ -21,11 +37,7 @@ post('/login') do
     if result == []
         redirect('/failed')
     end
-    encrypted_pass = result[0]["Password"]
-    if BCrypt::Password.new(encrypted_pass) == params["pass"]
-        session[:loggedin] = true
-        session[:user_id] = result[0]["UserId"]
-        session[:name] = params["name"]
+    if login(result)
         redirect('/profil')
     else
         redirect('/failed')
