@@ -17,8 +17,28 @@ def login(result)
     end
 end
 
+# def verify_post_owner(id)
+#     db = SQLite3::Database.new('blogg.db')
+#     op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
+#     if op_id[0][0] == session[:user_id]
+#         db.results_as_hash = true
+#         post = db.execute("SELECT PostId, ContentText, ContentImage FROM posts WHERE PostId =(?)", params["id"])
+#         slim(:edit, locals:{
+#             post: post
+#         })
+#     else
+#         redirect('/failed')
+#     end
+# end
+
+secure_routes = ['/profil','/post','/edit/:id','/delete/:id']
+
 before do
-    
+    if secure_routes.include? request.path()
+        if session[:loggedin] != true
+            redirect('/login')
+        end
+    end
 end
 
 get('/') do
@@ -45,17 +65,13 @@ post('/login') do
 end
 
 get('/profil') do
-    if session[:loggedin] == true
-        db = SQLite3::Database.new('blogg.db')
-        db.results_as_hash = true
-        posts = db.execute("SELECT posts.PostId, posts.ContentText, posts.ContentImage, users.Username FROM posts INNER JOIN users ON users.UserId = posts.UserId WHERE posts.UserId =(?)", session[:user_id])
-        slim(:profil, locals:{
-            username: session[:name],
-            posts: posts
-        })
-    else
-        redirect('/')
-    end
+    db = SQLite3::Database.new('blogg.db')
+    db.results_as_hash = true
+    posts = db.execute("SELECT posts.PostId, posts.ContentText, posts.ContentImage, users.Username FROM posts INNER JOIN users ON users.UserId = posts.UserId WHERE posts.UserId =(?)", session[:user_id])
+    slim(:profil, locals:{
+        username: session[:name],
+        posts: posts
+    })
 end
 
 post('/logout') do
@@ -95,7 +111,6 @@ end
 
 post('/delete/:id') do
     db = SQLite3::Database.new('blogg.db')
-
     op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
     if op_id[0][0] == session[:user_id]
         db.execute("DELETE FROM posts WHERE PostId = (?)",params["id"])
@@ -107,7 +122,6 @@ end
 
 get('/edit/:id') do
     db = SQLite3::Database.new('blogg.db')
-
     op_id = db.execute("SELECT UserId FROM posts WHERE PostId =(?)", params["id"])
     if op_id[0][0] == session[:user_id]
         db.results_as_hash = true
